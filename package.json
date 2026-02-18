@@ -1,0 +1,19 @@
+{
+  "name": "projdevtinder",
+  "version": "1.0.0",
+  "description": "tinder",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "keywords": [
+    "javascript",
+    "nodejs"
+  ],
+  "author": "Rakesh Kusuma",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
