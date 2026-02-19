@@ -9,7 +9,7 @@ const user = {
 // NOTE: aapp.use is very danger here -> it always runs event if we try /user as it is matchin /
 // So keep in mind the order., Avoid using app.use()
 app.use("/", (req, res) => {
-  res.send("HAHAHAHAHA");
+  res.send("HAHAHAHAHAHAHHA");
 });
 
 app.get("/users", (req, res) => {
