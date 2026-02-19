@@ -1,17 +1,26 @@
 const express = require("express");
 const app = express();
+const user = {
+  FullName: "Rakesh Kusuma",
+  WorkingAt: "Elp Aviation",
+  EmpCode: "ELP0046",
+};
 
-app.use("/home", (req, res) => {
-  res.send("i am in home page");
-});
-app.use("/users", (req, res) => {
-  res.send("i am in users page");
-});
-
-app.use("/careers", (req, res) => {
-  res.send("i am in careers page");
+// NOTE: aapp.use is very danger here -> it always runs event if we try /user as it is matchin /
+// So keep in mind the order., Avoid using app.use()
+app.use("/", (req, res) => {
+  res.send("HAHAHAHAHA");
 });
 
-app.listen(7777, () => {
-  console.log("server is running in port 7777....");
+app.get("/users", (req, res) => {
+  res.send(user);
+});
+app.post("/users", (req, res) => {
+  res.send("POST Method called successfully..!!");
+});
+app.delete("/users", (req, res) => {
+  res.send("DELETE method called successfully..!!");
+});
+app.listen(3700, () => {
+  console.log("applicaiton is running at port >> 3700");
 });
