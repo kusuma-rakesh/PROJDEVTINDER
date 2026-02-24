@@ -1,0 +1,9 @@
+app.get("/users", (req,res)=>{
+console.log(req.query)
+res.send("req query like >>  https://127.0.0.1./users/name=rakesh&pwd=xyz")
+})
+
+app.get("/users/:userid/:name/:dob", (req,res)=>{
+console.log(req.params)
+res.send("req query like >>  https://127.0.0.1./users/101/rakesh/30oct1987")
+})

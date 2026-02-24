@@ -1,0 +1,7 @@
+git add .  --> to add files
+git commit -m "mesg"
+
+ 
+git remote add origin https://github.com/kusuma-rakesh/PROJDEVTINDER.git
+git branch -M main
+git push -u origin main
