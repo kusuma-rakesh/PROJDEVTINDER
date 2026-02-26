@@ -1,3 +1,8 @@
+/*
+Notes:
+install npm install mongodb
+install npm install cors --save
+*/
 const express = require("express");
 const app = express();
 const cors = require("cors");
