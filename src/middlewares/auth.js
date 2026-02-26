@@ -25,4 +25,18 @@ const isAuthorize = (req, res, next) => {
   }
 };
 
-module.exports = { isAuthorize };
+const isUserAuthorize = (req, res, next) => {
+  console.log("In user Auth--Feb");
+
+  const token = "adminUser";
+  const isAuth = token === "adminUser";
+  if (!isAuth) {
+    res.status(401).send("unauthorized login");
+    // next();
+  } else {
+    // res.send("authorized");
+    next();
+  }
+};
+
+module.exports = { isAuthorize, isUserAuthorize };
