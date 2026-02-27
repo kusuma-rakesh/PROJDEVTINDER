@@ -1,31 +1,37 @@
 const express = require("express");
 const app = express();
-const { isAuthorize, isUserAuthorize } = require("./middlewares/auth.js");
+const { connStr, connection } = require("./Config/database.js");
+const { User } = require("./models/user.js");
+connection
+  .then((clientObj) => {
+    console.log("database connection established successfully..!", connStr);
+    var db = clientObj.db("devTinder");
+    try {
+      app.post("/signup", (req, res) => {
+        const userObj = {
+          firstName: "Rakesh",
+          lastName: "Kusuma",
+          emailID: "rakesh@kusuma.com",
+          password: "rakesh@123",
+          gender: "male",
+        };
+        db.collection("User")
+          .insertOne(userObj)
+          .then(() => {
+            res.send("user added successfully");
+          });
+      });
+    } catch (err) {
+      console.error("something went wrong " + err.message);
+    }
 
-try {
-  app.use("/admin", isAuthorize);
-
-  app.get("/admin/getAllUsers", (req, res, next) => {
-    res.send("getAllUsers");
+    app.listen(7776, () => {
+      console.log("application server running on port:7776");
+    });
+  })
+  .catch((err) => {
+    console.error(err.message);
+  })
+  .finally(() => {
+    console.log("In Finally");
   });
-  app.get("/admin/deleteAUser", (req, res, next) => {
-    res.send("deleteAUser");
-  });
-
-  app.get("/users/data", isUserAuthorize, (req, res) => {
-    res.asend("User data page loaded"); //spell mistake in send
-    // res.send("User data page loaded"); //spell mistake in send
-  });
-} catch (err) {
-  res.status(500).send("Something went wrong please contact developer..");
-}
-
-//below code handles the errors  for all routings "/"
-app.use("/", (err, req, res, next) => {
-  if (err) {
-    res.status(500).send("Something Went Wrong..!!");
-  }
-});
-app.listen(7774, () => {
-  console.log("application running on port 7774");
-});
