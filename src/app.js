@@ -1,37 +1,32 @@
 const express = require("express");
 const app = express();
-const { connStr, connection } = require("./Config/database.js");
-const { User } = require("./models/user.js");
-connection
+const { conStr, con } = require("./Config/database.js");
+con
   .then((clientObj) => {
-    console.log("database connection established successfully..!", connStr);
+    app.listen(7777, () => {
+      console.log("app running on 7777");
+    });
+    const userObj = {
+      firstName: "Narendra",
+      lastName: "Modi",
+      emailID: "modi@n.com",
+      password: "modi@123",
+      gender: "male",
+    };
     var db = clientObj.db("devTinder");
-    try {
-      app.post("/signup", (req, res) => {
-        const userObj = {
-          firstName: "Rakesh",
-          lastName: "Kusuma",
-          emailID: "rakesh@kusuma.com",
-          password: "rakesh@123",
-          gender: "male",
-        };
+    app.post("/signup", (req, res) => {
+      try {
         db.collection("User")
           .insertOne(userObj)
           .then(() => {
-            res.send("user added successfully");
+            console.log("done insertion");
           });
-      });
-    } catch (err) {
-      console.error("something went wrong " + err.message);
-    }
-
-    app.listen(7776, () => {
-      console.log("application server running on port:7776");
+        res.send("data inserted successfully.");
+      } catch (err) {
+        console.error(err.message);
+      }
     });
   })
   .catch((err) => {
-    console.error(err.message);
-  })
-  .finally(() => {
-    console.log("In Finally");
+    console.log("Error in conn");
   });
