@@ -101,6 +101,26 @@ con
     } catch (err) {
       console.error("Something Went Wrong", err.message);
     }
+
+    //Update - Patch
+    try {
+      app.patch("/updateUser", (req, res) => {
+        const firstName = req.body.firstName;
+        const data = req.body;
+        console.log({ firstName });
+        console.log(data);
+
+        db.collection("User")
+          .findOneAndUpdate({ firstName }, { $set: data })
+          //   .toArray()
+          .then(() => {
+            console.log(`${firstName}  - Data Updated successfully.`);
+            res.redirect("/feedUsers");
+          });
+      });
+    } catch (err) {
+      console.error("Something Went Wrong", err.message);
+    }
   })
   .catch((err) => {
     console.log("Error in conn", err.message);
