@@ -25,6 +25,7 @@ con
     // };
 
     var db = clientObj.db("devTinder");
+    //Insert data from postman - body - raw - json
     app.post("/signup", (req, res) => {
       try {
         const newUser = new User(
@@ -39,12 +40,67 @@ con
           .insertOne(newUser)
           .then(() => {
             console.log("done insertion");
+            res.redirect("/feedUsers");
           });
-        res.send("data inserted successfully from Postman.");
+        //res.send("data inserted successfully from Postman.");
       } catch (err) {
         console.error(err.message);
       }
     });
+
+    //findAll
+    app.get("/feedUsers", (req, res) => {
+      //Fetch all users
+      db.collection("User")
+        .find({})
+        .toArray()
+        .then((result) => {
+          res.send(result);
+        });
+    });
+
+    //fineOne
+    try {
+      //Fetch required user
+      app.get("/getUser", (req, res) => {
+        const fName = req.body.firstName;
+        //const fName = req.query.firstName; // http://127.0.0.1:7777/getUser?firstName=Rakesh
+        console.log("FirstName:=", fName);
+
+        db.collection("User")
+          .findOne({ firstName: fName })
+          //   .toArray()
+          .then((result) => {
+            if (!result) {
+              res.status(404).send("User Not Found");
+            } else {
+              res.send(result);
+            }
+          });
+      });
+    } catch (err) {
+      console.error("Something Went Wrong", err.message);
+    }
+
+    //Delete
+    try {
+      //Delete a user
+      app.delete("/deleteUser", (req, res) => {
+        const fName = req.body.firstName;
+        //const fName = req.query.firstName; // http://127.0.0.1:7777/getUser?firstName=Rakesh
+        console.log("FirstName:=", fName);
+
+        db.collection("User")
+          .deleteOne({ firstName: fName })
+          //   .toArray()
+          .then(() => {
+            console.log(`${fName}  - Delete successfully.`);
+            res.redirect("/feedUsers");
+          });
+      });
+    } catch (err) {
+      console.error("Something Went Wrong", err.message);
+    }
   })
   .catch((err) => {
     console.log("Error in conn", err.message);
