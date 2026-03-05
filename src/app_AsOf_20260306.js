@@ -2,8 +2,6 @@ const express = require("express");
 const app = express();
 const { conStr, con } = require("./Config/database.js");
 const { User } = require("./models/user.js");
-var validator = require("validator");
-
 app.use(express.json());
 con
   .then((clientObj) => {
@@ -37,13 +35,7 @@ con
           req.body.password,
           req.body.gender,
           req.body.age,
-          req.body.skills,
         );
-        if (!validator.isEmail(req.body.emailID)) {
-          throw new error("Email is invalid..");
-        } else if (!validator.isStrongPassword(req.body.password)) {
-          throw new error("Password is not strong");
-        }
         db.collection("User")
           .insertOne(newUser)
           .then(() => {
@@ -53,7 +45,6 @@ con
         //res.send("data inserted successfully from Postman.");
       } catch (err) {
         console.error(err.message);
-        res.status(400).send("Email is not valid.!");
       }
     });
 
@@ -73,7 +64,6 @@ con
       //Fetch required user
       app.get("/getUser", (req, res) => {
         const fName = req.body.firstName;
-
         //const fName = req.query.firstName; // http://127.0.0.1:7777/getUser?firstName=Rakesh
         console.log("FirstName:=", fName);
 
@@ -114,37 +104,12 @@ con
 
     //Update - Patch
     try {
-      app.patch("/updateUser/:firstName", (req, res) => {
-        //const firstName = req.body.firstName;
-        const firstName = req.params?.firstName; //
-        console.log(firstName);
-
+      app.patch("/updateUser", (req, res) => {
+        const firstName = req.body.firstName;
         const data = req.body;
-        const ALLOWED_FIELD_UPDATES = ["lastName", "password", "age", "skills"];
-        if (req.body.skills.length > 10) {
-          res.status(400).send("Skills exceeding the expected size");
-        }
+        console.log({ firstName });
+        console.log(data);
 
-        // Call: http://127.0.0.1:7777/updateUser/MS
-        // RAW data Given in Postman => {
-        // "lastName": "MSDhoni",
-        // "password": "Dhoni@9799",
-        // "gender": "male",
-        // "age":47
-        // }
-
-        //Explaination:
-        //object.key() - checks the field names(Not Values)
-        //every() => in complete collection of MS
-        //ALLOWED_FIELD_UPDATES.includes --> if the given fields are only included in the object, then it returns true.
-        const isUpdateAllowed = Object.keys(data).every((k) =>
-          ALLOWED_FIELD_UPDATES.includes(k),
-        );
-        console.log(isUpdateAllowed);
-
-        if (!isUpdateAllowed) {
-          res.send("Update Is Not Alloed For Given Object Definition");
-        }
         db.collection("User")
           .findOneAndUpdate({ firstName }, { $set: data })
           //   .toArray()
@@ -154,8 +119,7 @@ con
           });
       });
     } catch (err) {
-      //   console.error("Something Went Wrong", err.message);
-      res.send("Something Not Worked");
+      console.error("Something Went Wrong", err.message);
     }
   })
   .catch((err) => {
