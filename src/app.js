@@ -3,7 +3,7 @@ const app = express();
 const { conStr, con } = require("./Config/database.js");
 const { User } = require("./models/user.js");
 var validator = require("validator");
-
+var { validateSignUpData } = require("./helpers/devTinderHelper.js");
 app.use(express.json());
 con
   .then((clientObj) => {
@@ -39,11 +39,8 @@ con
           req.body.age,
           req.body.skills,
         );
-        if (!validator.isEmail(req.body.emailID)) {
-          throw new error("Email is invalid..");
-        } else if (!validator.isStrongPassword(req.body.password)) {
-          throw new error("Password is not strong");
-        }
+        validateSignUpData(req.body);
+
         db.collection("User")
           .insertOne(newUser)
           .then(() => {
