@@ -4,6 +4,8 @@ const { conStr, con } = require("./Config/database.js");
 const { User } = require("./models/user.js");
 var validator = require("validator");
 var { validateSignUpData } = require("./helpers/devTinderHelper.js");
+var bcrypt = require("bcrypt");
+
 app.use(express.json());
 con
   .then((clientObj) => {
@@ -30,27 +32,32 @@ con
     //Insert data from postman - body - raw - json
     app.post("/signup", (req, res) => {
       try {
-        const newUser = new User(
-          req.body.firstName,
-          req.body.lastName,
-          req.body.emailID,
-          req.body.password,
-          req.body.gender,
-          req.body.age,
-          req.body.skills,
-        );
         validateSignUpData(req.body);
+        const { password } = req.body;
+        bcrypt.hash(password, 10).then((hashedpassword) => {
+          console.log(hashedpassword);
+          const newUser = new User(
+            req.body.firstName,
+            req.body.lastName,
+            req.body.emailID,
+            //req.body.password,
+            hashedpassword,
+            req.body.gender,
+            req.body.age,
+            req.body.skills,
+          );
+          db.collection("User")
+            .insertOne(newUser)
+            .then(() => {
+              console.log("done insertion");
+              res.redirect("/feedUsers");
+            });
+        });
 
-        db.collection("User")
-          .insertOne(newUser)
-          .then(() => {
-            console.log("done insertion");
-            res.redirect("/feedUsers");
-          });
         //res.send("data inserted successfully from Postman.");
       } catch (err) {
         console.error(err.message);
-        res.status(400).send("Email is not valid.!");
+        res.status(400).send("ERROR: " + err.message);
       }
     });
 

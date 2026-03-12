@@ -15,11 +15,12 @@ const { Schema } = mongoose;
 // const User = mongoose.model("User", userSchema);
 
 class User {
-  constructor(firstName, lastName, password, emailID, gender, age, skills) {
+  constructor(firstName, lastName, emailID, password, gender, age, skills) {
     this.firstName = firstName;
     this.lastName = lastName;
-    this.password = password;
     this.emailID = emailID;
+    this.password = password;
+
     this.gender = gender;
     this.age = age;
     this.skills = skills;
