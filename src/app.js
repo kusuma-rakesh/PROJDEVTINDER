@@ -161,6 +161,41 @@ con
       //   console.error("Something Went Wrong", err.message);
       res.send("Something Not Worked");
     }
+
+    //Login
+    try {
+      app.post("/login", (req, res) => {
+        const { emailID, password, firstName } = req.body;
+        console.log(emailID + "--" + password + "--" + firstName);
+
+        if (!validator.isEmail(emailID)) {
+          throw new err("Invalid Login Email");
+        }
+        db.collection("User")
+          .findOne({ firstName: firstName })
+          .then((data) => {
+            bcrypt.compare(password, data.password).then((result) => {
+              if (result) {
+                console.log(
+                  "Logged in successfully..!",
+                  password,
+                  data.password,
+                  result,
+                );
+                res.send("Logged in successfully..!");
+              } else {
+                res.status(400).send("Login Failed..!");
+              }
+            });
+          })
+          .catch((err) => {
+            console.error("Password Error");
+            res.status(400).send("Logged Failed..!", err.message);
+          });
+      });
+    } catch (err) {
+      console.error("Something Went Wrong", err.message);
+    }
   })
   .catch((err) => {
     console.log("Error in conn", err.message);
