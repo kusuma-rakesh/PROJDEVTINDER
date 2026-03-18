@@ -5,8 +5,12 @@ const { User } = require("./models/user.js");
 var validator = require("validator");
 var { validateSignUpData } = require("./helpers/devTinderHelper.js");
 var bcrypt = require("bcrypt");
+var cookieParser = require("cookie-parser");
 
 app.use(express.json());
+app.use(cookieParser());
+// without this cookie-parser, if we try to fetch(req.cookies) the cookie from client(browser or postman) it gives an undefined.
+
 con
   .then((clientObj) => {
     app.listen(7777, () => {
@@ -182,6 +186,10 @@ con
                   data.password,
                   result,
                 );
+                res.cookie(
+                  "token",
+                  "fkldnflvckdff;ef;erfhcmZ<>VNKkldkfbfdbglg",
+                );
                 res.send("Logged in successfully..!");
               } else {
                 res.status(400).send("Login Failed..!");
@@ -195,6 +203,25 @@ con
       });
     } catch (err) {
       console.error("Something Went Wrong", err.message);
+    }
+
+    //Profile
+    try {
+      app.get("/profile", (req, res) => {
+        const { firstName, emailID } = req.body;
+        const { token } = req.cookies;
+        console.log(firstName, token);
+
+        db.collection("User")
+          .find({ firstName: firstName })
+          .toArray()
+          .then((data) => {
+            console.log(data, req.cookies);
+            res.send("data read successfully for user: ", firstName);
+          });
+      });
+    } catch (err) {
+      console.error("Error while fetching the user profile");
     }
   })
   .catch((err) => {
