@@ -6,6 +6,7 @@ var validator = require("validator");
 var { validateSignUpData } = require("./helpers/devTinderHelper.js");
 var bcrypt = require("bcrypt");
 var cookieParser = require("cookie-parser");
+var jwt = require("jsonwebtoken");
 
 app.use(express.json());
 app.use(cookieParser());
@@ -175,21 +176,23 @@ con
         if (!validator.isEmail(emailID)) {
           throw new err("Invalid Login Email");
         }
+
         db.collection("User")
           .findOne({ firstName: firstName })
           .then((data) => {
             bcrypt.compare(password, data.password).then((result) => {
               if (result) {
+                const token = jwt.sign({ _id: data._id }, "Dev@Tinder$123");
                 console.log(
                   "Logged in successfully..!",
                   password,
                   data.password,
+                  data._id,
                   result,
+                  token,
                 );
-                res.cookie(
-                  "token",
-                  "fkldnflvckdff;ef;erfhcmZ<>VNKkldkfbfdbglg",
-                );
+
+                res.cookie("token", token);
                 res.send("Logged in successfully..!");
               } else {
                 res.status(400).send("Login Failed..!");
@@ -210,13 +213,19 @@ con
       app.get("/profile", (req, res) => {
         const { firstName, emailID } = req.body;
         const { token } = req.cookies;
+        if (!token) {
+          throw new error("Token is invalid");
+        }
         console.log(firstName, token);
+        const decodedData = jwt.verify(token, "Dev@Tinder$123");
+        const { _id } = decodedData;
+        console.log("User JWT TokenID = " + _id);
 
         db.collection("User")
           .find({ firstName: firstName })
           .toArray()
           .then((data) => {
-            console.log(data, req.cookies);
+            //console.log(data, req.cookies);
             res.send("data read successfully for user: ", firstName);
           });
       });
